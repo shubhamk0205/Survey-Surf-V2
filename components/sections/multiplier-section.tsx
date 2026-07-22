@@ -20,7 +20,7 @@ export function MultiplierSection() {
     <Chapter id={sectionIds.multiplier}>
       <SectionHeader opener={multiplierOpener} />
 
-      <Reveal as="figure" className="fig-plate">
+      <Reveal as="figure" className="fig-plate draw-bars">
         <Plate>
           <Tabs
             ariaLabel="Perception read"

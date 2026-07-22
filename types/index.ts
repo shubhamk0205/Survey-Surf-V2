@@ -37,6 +37,25 @@ export interface SectionOpener {
   marginNote?: string;
 }
 
+/* ---------- Chapter seam — the editorial bridge between chapters ----------
+   The connective tissue in the whitespace where one chapter ends and the next
+   begins: a centered issue marker on a hairline, a line that concludes the
+   chapter just read, and a forward teaser that is a real jump-link into the
+   next chapter (its running head, small-caps). Never restates the next
+   headline — it sets it up, so the reading stays continuous. */
+export interface ChapterSeam {
+  /** Centered marker sitting on the hairline, e.g. "SS · ISSUE 01". */
+  issue: string;
+  /** A closing line that concludes the chapter just read. */
+  leadOut: string;
+  /** The forward pull into the next chapter — a hook, not the next headline. */
+  teaser: string;
+  /** The next chapter's running head, e.g. "Chapter 02 · The Blind Spot". */
+  next: string;
+  /** Anchor href of the next chapter, for the jump link (e.g. "#blindspot"). */
+  nextHref: string;
+}
+
 /* ---------- Hero (the cover) ---------- */
 
 /** A single standing figure in the hero's trust row. */
@@ -105,6 +124,35 @@ export interface HeroSceneContent {
   clarity: HeroSceneLabel;
   /** Bottom-right ledger panel. */
   stats: HeroSceneStat[];
+}
+
+/* ---------- Conversation stream (FIG. A — the cover exhibit) ----------
+   The redesigned cover visualization: ~50 scattered customer opinions drift
+   on the left, emit thin converging streams of light, and resolve — on the
+   far right — into one fixed perception card. All copy lives here; the
+   flow geometry and particle field are generated in the figure itself. */
+
+/** A single measured stat printed at the foot of the perception card. */
+export interface PerceptionStat {
+  value: string;
+  label: string;
+}
+
+/** The one fixed insight everything flows into. */
+export interface PerceptionCard {
+  /** Small eyebrow above the verdict, e.g. "The Market's Perception". */
+  eyebrow: string;
+  /** The verbatim perception the market holds — the emotional payload. */
+  quote: string;
+  /** The two ledger figures beneath the verdict. */
+  stats: PerceptionStat[];
+}
+
+export interface ConversationStreamContent {
+  /** ~50 unique customer opinions that populate the drifting chip field. */
+  phrases: string[];
+  /** The single perception the stream converges into. */
+  perception: PerceptionCard;
 }
 
 /* ---------- Evidence board (FIG. A — the cover exhibit) ----------
@@ -280,22 +328,6 @@ export interface HeroPhoto {
   caption: string;
   captionStrong: string;
   captionRight: string;
-}
-
-/* ---------- Trust band ---------- */
-export interface TrustStat {
-  /** Large display value; may embed an `<em>`-styled unit via `em`. */
-  value: string;
-  em?: string;
-  caption: string;
-}
-
-export interface TrustContent {
-  lead: string;
-  logos: string[];
-  stats: TrustStat[];
-  footLabel: string;
-  footNote: string;
 }
 
 /* ---------- Proof band ---------- */
@@ -564,7 +596,7 @@ export interface StreamFragment {
   gloss?: string;
 }
 
-/** A visualized scale / trust claim (mirrors the trust-band stat cell). */
+/** A visualized scale / trust claim — a display value with an optional unit. */
 export interface ScaleStat {
   value: string;
   em?: string;

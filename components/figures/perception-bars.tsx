@@ -15,12 +15,13 @@ import { cn } from "@/lib/utils";
 export function AbsoluteBars() {
   return (
     <>
-      {absoluteBars.map((bar) => (
+      {absoluteBars.map((bar, i) => (
         <BarMeter
           key={bar.label}
           label={bar.label}
           value={bar.value}
           display={String(bar.value)}
+          index={i}
         />
       ))}
       <div className="row">
@@ -55,7 +56,7 @@ export function RelativeBars() {
         </span>
       </div>
 
-      {relativeGroups.map((group) => (
+      {relativeGroups.map((group, gi) => (
         <div className="rel-group" key={group.label}>
           <div className="rel-head">
             <span className="bar-label">{group.label}</span>
@@ -69,7 +70,7 @@ export function RelativeBars() {
               )}
             </span>
           </div>
-          <div className="rel-bars">
+          <div className="rel-bars" style={{ "--i": gi } as CSSProperties}>
             <span
               className="rel-bar b-you"
               style={{ width: `${group.you}%` } as CSSProperties}

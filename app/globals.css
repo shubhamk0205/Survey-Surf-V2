@@ -43,7 +43,7 @@
 
   /* Layout scale */
   --spacing-unit: 8px; /* baseline rhythm unit */
-  --container-editorial: 1480px; /* wide editorial measure — confident, not floating */
+  --container-editorial: 1400px; /* wide editorial measure — confident, not floating */
 
   /* Breakpoints — mirror the reference's responsive stops */
   --breakpoint-ss-sm: 680px;
@@ -74,7 +74,7 @@
   --margin-col: 240px; /* reserved outer margin column */
   --measure: 66ch; /* ideal reading measure */
   --pad-x: 72px; /* container gutter — generous, intentional (responsive below) */
-  --section-gap: 120px; /* rhythm between chapters (responsive below) */
+  --section-gap: 96px; /* rhythm between chapters — dense but breathing (responsive below) */
 
   /* Alpha variants — derived from the base inks so brand color lives in
      exactly one place. Used for washes, hairlines, shadows and overlays. */
@@ -87,6 +87,16 @@
   --ink-a45: color-mix(in srgb, var(--ink) 45%, transparent);
   --paper-a62: color-mix(in srgb, var(--paper) 62%, transparent);
   --paper-a88: color-mix(in srgb, var(--paper) 88%, transparent);
+
+  /* Motion — one shared vocabulary so every micro-interaction reads as the
+     same hand. Values are the ones already scattered through the figures:
+     `draw` is the pen/stroke curve, `settle` the soft card/bar landing.
+     Slow and understated by intent — never springy, never flashy. */
+  --ease-draw: cubic-bezier(0.4, 0, 0.3, 1);
+  --ease-settle: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-quick: 0.42s;
+  --dur-base: 0.6s;
+  --dur-slow: 0.9s;
 }
 
 /* Gutter + rhythm ladder — breathing room that scales with the viewport.
@@ -683,6 +693,71 @@
   .js .ink-seq.is-in .leader-row:nth-child(10) {
     transition-delay: 0.77s;
   }
+
+  /* ---- Self-drawing rule: a divider sweeps in left→right on scroll ----
+     Reuses the observer via <Rule draw> (adds .rule-draw + toggles .is-in).
+     Without JS the border is simply present; only the `.js` scope hides it. */
+  .js .rule-draw {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-slow) var(--ease-draw);
+  }
+  .js .rule-draw.is-in {
+    transform: scaleX(1);
+  }
+
+  /* ---- Growable bars: fills draw from the left as the figure enters ---- */
+  .js .draw-bars .bar-fill,
+  .js .draw-bars .rel-bar {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-slow) var(--ease-draw);
+    transition-delay: calc(var(--i, 0) * 0.09s);
+  }
+  .js .draw-bars.is-in .bar-fill,
+  .js .draw-bars.is-in .rel-bar {
+    transform: scaleX(1);
+  }
+
+  /* ---- Hover lift: a card rises a hair off the page. Understated, slow.
+     Never place on a `.reveal` element (its entrance also drives transform);
+     use on cards / inner wrappers only. ---- */
+  .lift {
+    transition:
+      transform var(--dur-base) var(--ease-settle),
+      box-shadow var(--dur-base) var(--ease-settle);
+  }
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px -22px var(--ink-a40);
+    }
+  }
+
+  /* ---- Index rows: a quiet tint + the arrow leans in on hover.
+     Scoped to the reading indexes (sources / campaigns) so the locked
+     johari lists stay untouched. ---- */
+  .leader-arrow {
+    display: inline-block;
+  }
+  @media (hover: hover) {
+    .sources-index .leader-row,
+    .campaigns .leader-row {
+      transition: background-color var(--dur-quick) ease;
+    }
+    .sources-index .leader-row:hover,
+    .campaigns .leader-row:hover {
+      background: var(--ink-a05);
+    }
+    .sources-index .leader-arrow,
+    .campaigns .leader-arrow {
+      transition: transform var(--dur-base) var(--ease-settle);
+    }
+    .sources-index .leader-row:hover .leader-arrow,
+    .campaigns .leader-row:hover .leader-arrow {
+      transform: translateX(4px);
+    }
+  }
 }
 
 @keyframes ss-turn {
@@ -708,10 +783,22 @@
 /* Print is already still. */
 @media (prefers-reduced-motion: reduce) {
   .js .reveal,
-  .js .ink-seq .leader-row {
+  .js .ink-seq .leader-row,
+  .js .rule-draw,
+  .js .rule-draw.is-in,
+  .js .draw-bars .bar-fill,
+  .js .draw-bars .rel-bar,
+  .lift {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+  .lift:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .leader-row:hover .leader-arrow {
+    transform: none !important;
   }
   .turn-in {
     animation: none;

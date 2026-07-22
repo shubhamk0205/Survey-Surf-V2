@@ -10,7 +10,6 @@ import { PhilosophySection } from "@/components/sections/philosophy-section";
 import { SourcesSection } from "@/components/sections/sources-section";
 import { Ticker } from "@/components/sections/ticker";
 import { TranscriptSpread } from "@/components/sections/transcript-spread";
-import { TrustBand } from "@/components/sections/trust-band";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({ path: "/" });
@@ -20,7 +19,6 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBand />
       <GapSection />
       <BlindSpotSection />
       <MethodSection />

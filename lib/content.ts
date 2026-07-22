@@ -7,6 +7,8 @@
  * layouts, which are each structurally unique) lives with its figure component.
  */
 import type {
+  ChapterSeam,
+  ConversationStreamContent,
   Correction,
   Deliverable,
   EngineFlowNode,
@@ -31,7 +33,6 @@ import type {
   RelativeGroup,
   SectionOpener,
   SynthCluster,
-  TrustContent,
 } from "@/types";
 
 /* ============ HERO — THE COVER ============ */
@@ -86,6 +87,76 @@ export const heroScene: HeroSceneContent = {
     { label: "Confidence", value: "94%" },
     { label: "Updated Daily" },
   ],
+};
+
+/* ============ FIG. A · THE CONVERSATION STREAM ============
+   The redesigned cover exhibit. Fifty scattered customer opinions drift on the
+   left like dust in sunlight; each emits a thin, curved stream of light that
+   converges — organically, like rivers joining — into one fixed perception
+   card on the far right. The phrases and the card copy are real; the flow
+   geometry and particle field are generated in
+   `components/figures/conversation-stream.tsx`. */
+export const conversationStream: ConversationStreamContent = {
+  phrases: [
+    "Support is slow",
+    "Too expensive",
+    "Great onboarding",
+    "Excellent product",
+    "Love the UI",
+    "Buggy updates",
+    "Not for enterprise",
+    "Hard to justify",
+    "Premium pricing",
+    "Fast support",
+    "Confusing plans",
+    "Works great",
+    "Needs integrations",
+    "Switching next month",
+    "Very reliable",
+    "Better than competitors",
+    "Steep learning curve",
+    "Worth every penny",
+    "Feels overpriced",
+    "Beautiful design",
+    "Clunky mobile app",
+    "Best in class",
+    "Slow to load",
+    "Missing key features",
+    "Incredible value",
+    "Support ghosted me",
+    "Intuitive to use",
+    "Too many bugs",
+    "Rock solid",
+    "Pricing is unclear",
+    "Saves us hours",
+    "Hard to cancel",
+    "Polished experience",
+    "Overkill for us",
+    "Docs are excellent",
+    "Constant downtime",
+    "Genuinely delightful",
+    "Not worth the cost",
+    "Onboarding was smooth",
+    "Feels enterprise-grade",
+    "Wish it were cheaper",
+    "Setup took minutes",
+    "Lacks reporting",
+    "Highly recommend",
+    "Renewal shock",
+    "Support is world-class",
+    "Too complicated",
+    "Exactly what we needed",
+    "Buggy on launch",
+    "Can’t live without it",
+  ],
+  perception: {
+    eyebrow: "The Market’s Perception",
+    quote: "Excellent product. Too difficult to justify the price.",
+    stats: [
+      { value: "94%", label: "Confidence" },
+      { value: "2.3M", label: "Conversations" },
+    ],
+  },
 };
 
 /* ============ EVIDENCE BOARD — FIG. A · THE COVER EXHIBIT ============
@@ -647,28 +718,6 @@ export const heroPhoto: HeroPhoto = {
   captionRight: "UNCORRECTED PROOF",
 };
 
-/* ============ TRUST BAND — subscribers of record ============ */
-export const trust: TrustContent = {
-  lead: "Trusted by product teams at",
-  logos: [
-    "Google",
-    "Stripe",
-    "Microsoft",
-    "Canva",
-    "Ramp",
-    "Spotify",
-    "Airbnb",
-  ],
-  stats: [
-    { value: "10", em: "+", caption: "Signal sources" },
-    { value: "1000", em: "+", caption: "Insights analyzed" },
-    { value: "Enterprise", caption: "Ready" },
-    { value: "Global", caption: "Research" },
-  ],
-  footLabel: "SS · ISSUE 01 · SUBSCRIBERS OF RECORD",
-  footNote: "Perception, not prediction.",
-};
-
 /* ============ PROOF BAND ============ */
 export const proofFolio = {
   left: "SS · ISSUE 01 · ON THE RECORD",
@@ -689,6 +738,43 @@ export const proofCells: ProofCell[] = [
     caption: "Self-image vs market-image",
   },
 ];
+
+/* ============ CHAPTER SEAMS — the bridges between chapters ============
+   The connective tissue read in the whitespace between chapters. Each closes
+   the chapter just read (leadOut — often citing a real figure from it) and
+   pulls forward into the next (teaser — a hook, never the next headline, so
+   the running head below never reads twice). Keyed by the boundary they span;
+   wired into the page between the two sections in app/page.tsx. */
+export const chapterSeams: Record<string, ChapterSeam> = {
+  gapToBlind: {
+    issue: "SS · Issue 01",
+    leadOut: "A thirty-four point gap — measured, and filed.",
+    teaser: "But a gap that wide has to be hiding somewhere.",
+    next: "Chapter 02 · The Blind Spot",
+    nextHref: "#blindspot",
+  },
+  blindToMethod: {
+    issue: "SS · Issue 01",
+    leadOut: "Four rooms. Only the one you can’t see decides.",
+    teaser: "So how do you get inside a room with no door?",
+    next: "Chapter 03 · How It Works",
+    nextHref: "#method",
+  },
+  multiplierToSources: {
+    issue: "SS · Issue 01",
+    leadOut: "Perception, at last read against the field.",
+    teaser: "None of it holds without the signal underneath.",
+    next: "Chapter 05 · Always Listening",
+    nextHref: "#sources",
+  },
+  dossierToPhilosophy: {
+    issue: "SS · Issue 01",
+    leadOut: "A finished file — read in the room where you decide.",
+    teaser: "Which leaves one thing left to say plainly.",
+    next: "Chapter 07 · Our Stance",
+    nextHref: "#philosophy",
+  },
+};
 
 /* ============ THE GAP ============ */
 export const gap: GapContent = {

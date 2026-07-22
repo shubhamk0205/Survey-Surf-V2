@@ -1,3 +1,4 @@
+import { SourceConvergence } from "@/components/figures/source-convergence";
 import { LeaderRow } from "@/components/ui/leader-row";
 import { InkSequence } from "@/components/ui/reveal";
 import { Chapter } from "@/components/ui/section";
@@ -9,7 +10,7 @@ import { sources, sourcesOpener } from "@/lib/content";
 export function SourcesSection() {
   return (
     <Chapter id={sectionIds.sources}>
-      <SectionHeader opener={sourcesOpener} />
+      <SectionHeader opener={sourcesOpener} exhibit={<SourceConvergence />} />
       <InkSequence className="sources-index">
         {sources.map((item) => (
           <LeaderRow key={item.num} item={item} />

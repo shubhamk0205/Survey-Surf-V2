@@ -15,8 +15,10 @@
     background: var(--paper);
     border-bottom: 1px solid var(--ink);
     transition:
-      background-color 0.45s ease,
-      border-color 0.45s ease,
+      background-color 0.4s ease,
+      border-color 0.4s ease,
+      -webkit-backdrop-filter 0.4s ease,
+      backdrop-filter 0.4s ease,
       color 0.3s ease;
   }
   /* Over the dark cover, the masthead reads as part of the wall, then
@@ -26,14 +28,30 @@
     background: color-mix(in srgb, var(--ink) 82%, #000);
     border-bottom-color: transparent;
     color: var(--paper);
+    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(0px);
+  }
+  /* Once the cover starts to move, the bar keeps its nearly-black field but
+     lets a hint of the hero bleed through behind a whisper of backdrop blur —
+     a frosted glass that reads as presence, never as heavy chrome. */
+  .masthead--on-dark.masthead--scrolled {
+    background: color-mix(in srgb, #000 84%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    backdrop-filter: blur(14px) saturate(1.05);
   }
   .masthead--on-dark::after {
-    border-bottom-color: rgba(247, 244, 236, 0.09);
+    border-bottom-color: rgba(247, 244, 236, 0.12);
+  }
+  .masthead--on-dark.masthead--scrolled::after {
+    border-bottom-color: rgba(247, 244, 236, 0.18);
   }
   .masthead--on-dark .wordmark {
     color: var(--paper);
   }
   .masthead--on-dark .masthead-links a:not(.slip) {
+    color: color-mix(in srgb, var(--paper) 76%, transparent);
+  }
+  .masthead--on-dark .masthead-links a:not(.slip):hover {
     color: var(--paper);
   }
   .masthead::after {
@@ -41,19 +59,23 @@
     display: block;
     border-bottom: 1px solid var(--rule14);
   }
-  .masthead-in {
+  /* `.masthead .masthead-in` (not bare `.masthead-in`) so the vertical padding
+     out-ranks the shared `.wrap { padding: 0 var(--pad-x) }` gutter, which
+     would otherwise zero it. Horizontal gutter is left to `.wrap` so the bar
+     stays on the global content grid. */
+  .masthead .masthead-in {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding-top: 14px;
-    padding-bottom: 13px;
+    padding-block: 16px 15px;
   }
   .wordmark {
     font-family: var(--app);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 0.3em;
+    line-height: 1;
     text-decoration: none;
   }
   .wordmark .wm-dot {
@@ -61,30 +83,75 @@
   }
   .masthead-links {
     display: flex;
-    gap: 30px;
+    gap: 36px;
     align-items: center;
   }
   .masthead-links a:not(.slip) {
+    position: relative;
     font-family: var(--app);
     font-weight: 500;
-    font-size: 11px;
-    letter-spacing: 0.14em;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     text-decoration: none;
-    background-image: linear-gradient(var(--red), var(--red));
-    background-repeat: no-repeat;
-    background-size: 0% 1.5px;
-    background-position: 0 100%;
-    padding-bottom: 4px;
-    transition: background-size 0.35s ease;
+    color: var(--ink-soft);
+    transition: color 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* A 1px indicator that draws in from the left on hover — quieter and more
+     precise than a text underline, and it leaves vertical centering intact. */
+  .masthead-links a:not(.slip)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .masthead-links a:not(.slip):hover {
-    background-size: 100% 1.5px;
+    color: var(--ink);
+  }
+  .masthead-links a:not(.slip):hover::after {
+    transform: scaleX(1);
+  }
+  /* Masthead CTA — taller and calmer; keeps the established invert but now
+     lifts a touch with a soft glow. Scoped to the bar so the newsletter
+     slip (also `--small`) is untouched. */
+  .masthead .slip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    padding: 0 32px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    transition:
+      background 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .masthead .slip:hover {
+    transform: translateY(-2px);
+  }
+  .masthead:not(.masthead--on-dark) .slip:hover {
+    box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+  .masthead--on-dark .slip:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--paper) 30%, transparent),
+      0 10px 28px -10px rgba(0, 0, 0, 0.6);
   }
 
   /* ---------- SECTIONS / CHAPTERS ---------- */
   section {
-    scroll-margin-top: 76px;
+    scroll-margin-top: 92px;
   }
   .chapter {
     padding-top: var(--section-gap);
@@ -96,6 +163,182 @@
   }
   .opener .standfirst {
     margin-bottom: 0;
+  }
+
+  /* ---------- CHAPTER SEAM — the bridge between chapters ----------
+     The connective tissue read in the whitespace between two chapters, so the
+     issue reads as one bound document rather than stacked pages. A centered
+     issue marker on a hairline (thin divider + issue number), the chapter just
+     read concluded on the left (quiet), and a forward teaser that jump-links
+     into the next chapter on the right (louder — the eye is pulled downward
+     into what follows). A whisper of shadow across the band reads as the fold
+     of a page turn. The following chapter tightens its top rhythm so the seam
+     and the break beneath it read as one beat. */
+  .seam {
+    /* the page-turn fold — a faint horizontal shadow, the binding of the issue */
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--ink-a05) 50%,
+      transparent
+    );
+    padding: calc(var(--u) * 9) 0 calc(var(--u) * 4);
+  }
+  .seam + .chapter {
+    /* the seam already carries the break — don't double the gap beneath it */
+    padding-top: calc(var(--u) * 7);
+  }
+
+  /* the centered issue marker, flanked by hairlines (the page-break rule) */
+  .seam-issue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 0 0 calc(var(--u) * 3.5);
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .seam-issue::before,
+  .seam-issue::after {
+    content: "";
+    flex: 1;
+    max-width: clamp(64px, 22vw, 220px);
+    border-top: 1px solid var(--hair);
+  }
+
+  /* lead-out (left, quiet) + forward teaser (right, the pull) */
+  .seam-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: calc(var(--u) * 2) calc(var(--u) * 6);
+  }
+  .seam-out {
+    margin: 0;
+    max-width: 34ch;
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 440;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .seam-mark {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 12px;
+    background: var(--red);
+    transform: rotate(45deg);
+    vertical-align: middle;
+  }
+
+  /* the jump link — a real anchor into the next chapter */
+  .seam-next {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    text-align: right;
+    text-decoration: none;
+    color: inherit;
+    max-width: 40ch;
+  }
+  .seam-teaser {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 440;
+    font-size: clamp(19px, 2vw, 25px);
+    line-height: 1.26;
+    color: var(--ink);
+    /* the pen's underline, drawn on hover (the link-pen idiom) */
+    background-image: linear-gradient(var(--red), var(--red));
+    background-repeat: no-repeat;
+    background-size: 0% 1.5px;
+    background-position: 100% 100%;
+    padding-bottom: 3px;
+    transition: background-size 0.4s ease;
+  }
+  .seam-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--app);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    transition: color 0.3s ease;
+  }
+  .seam-arrow {
+    color: var(--red);
+    font-size: 13px;
+    line-height: 1;
+    transition: transform 0.3s ease;
+  }
+  .seam-next:hover .seam-teaser,
+  .seam-next:focus-visible .seam-teaser {
+    background-size: 100% 1.5px;
+  }
+  .seam-next:hover .seam-cue,
+  .seam-next:focus-visible .seam-cue {
+    color: var(--ink);
+  }
+  .seam-next:hover .seam-arrow,
+  .seam-next:focus-visible .seam-arrow {
+    transform: translateY(3px);
+  }
+
+  /* narrow — the bridge stacks; the teaser still leads downward into the next */
+  @media (max-width: 680px) {
+    .seam {
+      padding-top: calc(var(--u) * 7);
+    }
+    .seam-body {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: calc(var(--u) * 3);
+    }
+    .seam-next {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .seam-teaser {
+      background-position: 0 100%;
+    }
+  }
+
+  /* Opener carrying a companion visual: editorial text at reading width on the
+     left, the exhibit filling the right half (~50/50). The folio + rule above
+     still span the full grid, so the chapter still opens on the same edges. */
+  .opener-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(40px, 5vw, 88px);
+    align-items: center;
+  }
+  .opener-exhibit {
+    min-width: 0;
+  }
+  /* The margin note, when an opener has one, drops below the lede in the split
+     layout (there is no reserved margin column here). */
+  .opener-note {
+    margin-top: calc(var(--u) * 3.5);
+    padding-left: 18px;
+    border-left: 1px solid var(--red-a35);
+  }
+  @media (max-width: 900px) {
+    .opener-split {
+      grid-template-columns: 1fr;
+      row-gap: calc(var(--u) * 5);
+    }
   }
 
   /* ---------- HERO · THE FRONT PAGE ---------- */
@@ -425,111 +668,6 @@
     margin-top: calc(var(--u) * 1.5);
   }
 
-  /* ---------- TRUST BAND — subscribers of record ---------- */
-  .trust {
-    margin-top: var(--section-gap);
-  }
-  .trust-lead {
-    font-family: var(--app);
-    font-weight: 500;
-    font-size: 10.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    white-space: nowrap;
-  }
-  .trust-logos {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 20px 40px;
-    padding-bottom: calc(var(--u) * 3);
-  }
-  .logo-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 14px 34px;
-    list-style: none;
-    flex: 1;
-  }
-  .logo-row li {
-    font-family: var(--app);
-    font-weight: 600;
-    font-size: 17px;
-    letter-spacing: 0.02em;
-    color: var(--ink);
-    opacity: 0.72;
-    transition: opacity 0.25s ease;
-  }
-  .logo-row li:hover {
-    opacity: 1;
-  }
-  .trust-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-top: 2.5px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    position: relative;
-  }
-  .trust-stats::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 3px;
-    border-top: 1px solid var(--ink);
-  }
-  .trust-cell {
-    padding: 24px 30px 22px;
-    border-left: 1px solid var(--rule14);
-  }
-  .trust-cell:first-child {
-    border-left: none;
-    padding-left: 0;
-  }
-  .trust-num {
-    font-family: var(--display);
-    font-weight: 440;
-    font-size: clamp(38px, 3.4vw, 48px);
-    line-height: 1;
-    display: block;
-    margin-bottom: 9px;
-  }
-  .trust-num em {
-    font-style: italic;
-    font-weight: 430;
-    font-size: 0.86em;
-  }
-  .trust-cap {
-    font-family: var(--app);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-  }
-  .trust-foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 6px 20px;
-    margin-top: calc(var(--u) * 2);
-    font-family: var(--app);
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-  }
-  .trust-foot em {
-    font-family: var(--display);
-    font-style: italic;
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 15px;
-    color: var(--red);
-  }
-
   /* ============================================================
      HERO · THE COVER — a full-bleed dark front page.
      The same inverted treatment the issue already uses for the
@@ -537,23 +675,25 @@
      type and rhythm are the existing tokens; the only new values are
      locally-scoped, colour-mixed paper shades for photographic realism.
      ============================================================ */
+  /* ============================================================
+     THE COVER — a black field. Warm-ivory type on the left; on the right,
+     FIG. A · the conversation stream. No room, no desk, no lamps: one calm
+     near-black plane with a single restrained warm glow behind the point
+     where everything converges. All type, colour and rhythm stay on the
+     existing tokens; the only new values are the stream's scoped palette.
+     ============================================================ */
   .hero-cover {
-    /* ---- dark executive research room palette ---- */
-    --room-deep: #070503; /* deepest room shadow */
-    --room-mid: #100b07; /* charcoal midtone */
-    --room-warm: #2a1f14; /* where the lamp reaches */
-    --sky-far: #070809; /* night sky through the glass */
-    --sky-near: #120c07; /* the sky warming toward the city glow */
-    --city: #b47b38; /* warm city bokeh */
-
-    --amber: #cf9f43; /* the lamp's warm light */
+    /* ivory hairlines for the left-column trust row (unchanged) */
     --hair-l: rgba(247, 244, 236, 0.15);
     --hair-l-soft: rgba(247, 244, 236, 0.08);
 
-    /* the perception apparatus */
-    --hs-white: #f4f1e8;
-    --hs-chip: rgba(20, 16, 11, 0.72);
-    --hs-chip-edge: rgba(247, 244, 236, 0.12);
+    /* the conversation stream — charcoal chips, ivory type, one muted red */
+    --cs-ivory: #f4f1e8;
+    --cs-chip: rgba(18, 16, 13, 0.66);
+    --cs-chip-near: rgba(24, 21, 17, 0.82);
+    --cs-chip-edge: rgba(247, 244, 236, 0.1);
+    --cs-chip-edge-near: rgba(247, 244, 236, 0.2);
+    --cs-red: #c0563a; /* muted, warm — the brand red (#a63a2b) lifted for glow */
 
     position: relative;
     isolation: isolate;
@@ -561,254 +701,26 @@
     flex-direction: column;
     justify-content: center;
     min-height: calc(100svh - 49px);
-    background: var(--room-deep);
+    /* near-black, faintly warm; one soft glow sits behind the convergence */
+    background:
+      radial-gradient(
+        58% 68% at 82% 50%,
+        rgba(122, 72, 46, 0.1),
+        transparent 62%
+      ),
+      #060504;
     color: var(--paper);
     padding-top: calc(var(--u) * 6);
     padding-bottom: calc(var(--u) * 6);
     overflow: hidden;
   }
 
-  /* ============================================================
-     THE DARK RESEARCH ROOM — full-bleed background.
-     Floor-to-ceiling glass onto a night skyline; warm city bokeh low on
-     the right; faint mullions; a left vignette so the lede reads crisp over
-     near-black while the apparatus sits in the warm light.
-     ============================================================ */
-  .hero-room {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background-color: var(--room-deep);
-    background-image:
-      /* warm ground-glow: the lamps' bounce climbing off the desk into the room,
-         dying into the ceiling — fuses the warm foreground to the cold glass */
-      radial-gradient(
-        90% 62% at 46% 100%,
-        rgba(140, 84, 38, 0.26),
-        rgba(140, 84, 38, 0.06) 44%,
-        transparent 66%
-      ),
-      /* a faint cool room-ambient so the upper glass isn't dead black */
-      radial-gradient(
-        90% 70% at 70% 30%,
-        rgba(70, 84, 108, 0.08),
-        transparent 62%
-      ),
-      /* the night glass: deep sky warming to a low city band, then the sill */
-      linear-gradient(
-        180deg,
-        #05070b 0%,
-        #070a10 30%,
-        #08090d 58%,
-        #0d0c0d 68%,
-        #16110b 73%,
-        #0a0705 79%,
-        #060403 100%
-      );
-  }
-  /* window structure (mullions + frame) and the low city glow */
-  .hero-room::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      /* the broad warm glow of the city, hugging the horizon at ~72% */
-      radial-gradient(
-        70% 24% at 78% 72%,
-        rgba(184, 122, 58, 0.4),
-        rgba(184, 122, 58, 0) 72%
-      ),
-      /* the two desk lamps faintly reflected in the cold glass */
-      radial-gradient(3.5% 34% at 41% 52%, rgba(230, 168, 92, 0.07), transparent 68%),
-      radial-gradient(3% 30% at 79% 50%, rgba(230, 168, 92, 0.055), transparent 68%),
-      /* a deeper, dimmer second tier of city lights (distance) */
-      radial-gradient(1.4px 1.4px at 64% 67%, rgba(150, 175, 205, 0.45), transparent 60%),
-      radial-gradient(1.2px 1.2px at 70% 66.5%, rgba(170, 185, 210, 0.4), transparent 60%),
-      radial-gradient(1.6px 1.6px at 86% 67.5%, rgba(150, 175, 205, 0.4), transparent 60%),
-      radial-gradient(1.2px 1.2px at 90% 66%, rgba(200, 175, 130, 0.4), transparent 60%),
-      /* one or two brighter signature lights */
-      radial-gradient(2.5px 2.5px at 74% 70%, rgba(255, 214, 150, 0.95), transparent 66%),
-      radial-gradient(2px 2px at 88% 71.5%, rgba(255, 206, 140, 0.85), transparent 66%),
-      /* scattered warm city bokeh along the horizon */
-      radial-gradient(2.5px 2.5px at 60% 71%, rgba(224, 168, 92, 0.85), transparent 62%),
-      radial-gradient(2px 2px at 66% 73%, rgba(210, 156, 86, 0.7), transparent 62%),
-      radial-gradient(3px 3px at 72% 70%, rgba(232, 178, 104, 0.8), transparent 62%),
-      radial-gradient(2px 2px at 76% 72.5%, rgba(200, 150, 84, 0.6), transparent 62%),
-      radial-gradient(2.5px 2.5px at 82% 70.5%, rgba(224, 168, 92, 0.75), transparent 62%),
-      radial-gradient(1.5px 1.5px at 87% 72%, rgba(200, 150, 84, 0.6), transparent 62%),
-      radial-gradient(2px 2px at 92% 71%, rgba(220, 162, 90, 0.7), transparent 62%),
-      radial-gradient(1.5px 1.5px at 96% 72.5%, rgba(200, 150, 84, 0.55), transparent 62%),
-      radial-gradient(2px 2px at 55% 72.5%, rgba(190, 140, 80, 0.5), transparent 62%),
-      /* vertical mullions — a lit edge then a dark frame band (architectural depth) */
-      linear-gradient(90deg, transparent calc(42% - 5px), rgba(168, 165, 154, 0.24) calc(42% - 5px), rgba(168, 165, 154, 0.24) calc(42% - 4px), rgba(12, 11, 9, 0.62) calc(42% - 4px), rgba(12, 11, 9, 0.62) calc(42% + 3px), transparent calc(42% + 3px)),
-      linear-gradient(90deg, transparent calc(62% - 5px), rgba(168, 165, 154, 0.26) calc(62% - 5px), rgba(168, 165, 154, 0.26) calc(62% - 4px), rgba(12, 11, 9, 0.64) calc(62% - 4px), rgba(12, 11, 9, 0.64) calc(62% + 3px), transparent calc(62% + 3px)),
-      linear-gradient(90deg, transparent calc(82% - 5px), rgba(168, 165, 154, 0.24) calc(82% - 5px), rgba(168, 165, 154, 0.24) calc(82% - 4px), rgba(12, 11, 9, 0.62) calc(82% - 4px), rgba(12, 11, 9, 0.62) calc(82% + 3px), transparent calc(82% + 3px)),
-      /* horizontal transom (top) + sill (above the desk) */
-      linear-gradient(0deg, transparent calc(30% - 4px), rgba(12, 11, 9, 0.5) calc(30% - 4px), rgba(12, 11, 9, 0.5) calc(30% + 2px), rgba(168, 165, 154, 0.18) calc(30% + 2px), transparent calc(30% + 3px)),
-      linear-gradient(0deg, transparent calc(9% - 3px), rgba(12, 11, 9, 0.45) calc(9% - 3px), rgba(12, 11, 9, 0.45) calc(9% + 2px), transparent calc(9% + 2px)),
-      /* faint reflections sliding across the glass */
-      linear-gradient(116deg, transparent 44%, rgba(150, 165, 188, 0.05) 49%, transparent 53%),
-      linear-gradient(116deg, transparent 60%, rgba(150, 165, 188, 0.035) 64%, transparent 67%),
-      /* a couple of soft imperfections on the pane */
-      radial-gradient(26% 16% at 54% 38%, rgba(180, 190, 202, 0.02), transparent 72%),
-      radial-gradient(18% 12% at 88% 50%, rgba(180, 190, 202, 0.015), transparent 72%);
-  }
-  /* depth haze + left wall vignette + ceiling shadow + overall vignette + grain */
-  .hero-room::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      /* atmospheric haze — pushes the window into the mid-distance (DOF) */
-      radial-gradient(78% 46% at 72% 54%, rgba(96, 116, 146, 0.055), transparent 68%),
-      /* filmic corner darkening — top corners fall off first (anamorphic feel) */
-      radial-gradient(120% 80% at 50% -8%, rgba(0, 0, 0, 0.6), transparent 46%),
-      /* the dark wall behind the lede */
-      linear-gradient(
-        90deg,
-        rgba(4, 3, 2, 0.99) 0%,
-        rgba(4, 3, 2, 0.92) 20%,
-        rgba(4, 3, 2, 0.42) 40%,
-        rgba(4, 3, 2, 0) 55%
-      ),
-      /* ceiling falls into shadow (but the glass still reads faintly up top) */
-      linear-gradient(180deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 30%),
-      /* cinematic corner vignette */
-      radial-gradient(126% 118% at 56% 46%, transparent 42%, rgba(0, 0, 0, 0.86) 100%),
-      /* fine grain */
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.11'/%3E%3C/svg%3E");
-    background-size:
-      100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 160px 160px;
-    background-blend-mode: normal, normal, normal, normal, normal, soft-light;
-  }
-
-  /* volumetric light shafts from the two architect lamps, cast up through the
-     hazy air (soft cones widening from each bulb) */
-  .hero-lights {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    mix-blend-mode: screen;
-  }
-  .hero-lights::before,
-  .hero-lights::after {
-    content: "";
-    position: absolute;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 196, 120, 0.16),
-      rgba(255, 182, 102, 0.05) 52%,
-      transparent 82%
-    );
-    filter: blur(14px);
-  }
-  /* left lamp — beam leans slightly right toward the desk centre */
-  .hero-lights::before {
-    left: 26%;
-    top: 55%;
-    width: 26%;
-    height: 40%;
-    clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
-    transform: rotate(7deg);
-    transform-origin: 50% 0;
-  }
-  /* right lamp — beam leans slightly left */
-  .hero-lights::after {
-    left: 70%;
-    top: 54%;
-    width: 22%;
-    height: 40%;
-    clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
-    transform: rotate(-8deg);
-    transform-origin: 50% 0;
-    opacity: 0.85;
-  }
-
-  /* the air of the room — dust + haze, above the room, below the apparatus */
-  .hero-atmosphere {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
-  /* ============================================================
-     THE DESK — full-bleed foreground along the bottom.
-     ============================================================ */
-  .hero-desk {
-    position: absolute;
-    inset: auto 0 0 0;
-    z-index: 1;
-    pointer-events: none;
-    line-height: 0;
-  }
-  .hero-desk-svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    /* shallow depth of field — the near desk sits in front of the focal plane
-       (the lens), so it reads as deliberate foreground bokeh, not muddy detail */
-    filter: blur(2.4px);
-  }
-  /* two warm pools from the two lamps, washing across the desk — brighter
-     hot cores so the desk + chair read as lit materials against the dark */
-  .hero-desk::before {
-    content: "";
-    position: absolute;
-    inset: -40% 0 0 0;
-    background-image:
-      radial-gradient(15% 26% at 37% 62%, rgba(255, 206, 132, 0.5), rgba(240, 176, 96, 0.14) 44%, transparent 72%),
-      radial-gradient(26% 48% at 39% 66%, rgba(228, 162, 80, 0.26), rgba(228, 162, 80, 0.05) 52%, transparent 76%),
-      radial-gradient(13% 24% at 82% 58%, rgba(255, 206, 132, 0.42), rgba(240, 176, 96, 0.12) 44%, transparent 72%),
-      radial-gradient(24% 46% at 82% 62%, rgba(228, 162, 80, 0.22), rgba(228, 162, 80, 0.04) 52%, transparent 76%);
-    filter: blur(8px);
-  }
-  .hero-book-label {
-    font-family: var(--display);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    fill: #cf9f43;
-    opacity: 0.5;
-  }
-  .hero-bulb,
-  .hero-bulb-bloom {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: hero-flicker 6s ease-in-out infinite;
-  }
-  .hero-bulb-bloom {
-    opacity: 0.7;
-  }
-  .hero-steam {
-    transform-box: fill-box;
-    transform-origin: bottom center;
-    animation: hero-steam 7s ease-in-out infinite;
-  }
-  .hero-steam--b {
-    animation-duration: 9s;
-    animation-delay: -3s;
-  }
-  @keyframes hero-flicker {
-    0%, 100% { opacity: 0.85; }
-    45% { opacity: 1; }
-    55% { opacity: 0.78; }
-    70% { opacity: 0.92; }
-  }
-  @keyframes hero-steam {
-    0% { opacity: 0; transform: translateY(4px) scaleY(0.9); }
-    30% { opacity: 0.16; }
-    100% { opacity: 0; transform: translateY(-14px) scaleY(1.15); }
-  }
-
   .hero-cover-in {
     position: relative;
     z-index: 3;
     display: grid;
-    grid-template-columns: minmax(0, 0.66fr) minmax(0, 1fr);
+    /* the editorial split — 42% lede / 58% stream */
+    grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
     gap: clamp(24px, 2.6vw, 56px);
     align-items: center;
     width: 100%;
@@ -920,20 +832,22 @@
     color: var(--paper-a62);
   }
 
+
   /* ============================================================
-     FIG. A · THE PERCEPTION APPARATUS
-     Millions of scattered opinions (the intake stream, left) accelerate and
-     compress into a precision lens; on the far side they resolve into one
-     clean beam ending at a single red verdict point.
+     FIG. A · THE CONVERSATION STREAM
+     Left: ~50 drifting opinion chips (HTML). Centre: thin tributaries of
+     light + a particle field (canvas) converging like rivers. Right: one
+     fixed perception card. Everything flows into it; nothing flows out.
      ============================================================ */
   .hero-exhibit-col {
     position: relative;
   }
-  .hs {
+  .cs {
     position: relative;
     width: 100%;
   }
-  .hs-caption {
+  /* the figure is described for assistive tech, drawn for everyone else */
+  .cs-caption {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -944,744 +858,237 @@
     white-space: nowrap;
     border: 0;
   }
-  .hs-stage {
+  .cs-stage {
     position: relative;
     width: 100%;
     height: clamp(500px, 74vh, 780px);
   }
 
-  /* ---- top captions — glass HUD overlays ---- */
-  .hs-label {
-    position: absolute;
-    z-index: 6;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    max-width: 15rem;
-    padding: 14px 18px;
-    background: linear-gradient(
-      160deg,
-      rgba(28, 26, 24, 0.34),
-      rgba(8, 6, 4, 0.42)
-    );
-    border: 1px solid rgba(247, 244, 236, 0.06);
-    border-top-color: rgba(247, 244, 236, 0.14);
-    border-radius: 5px;
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    backdrop-filter: blur(14px) saturate(1.15);
-    /* directional edge-lighting keyed to the lamps + a soft projected shadow */
-    box-shadow:
-      0 26px 52px -18px rgba(0, 0, 0, 0.8),
-      inset 0 1px 0 rgba(255, 244, 228, 0.16),
-      inset -1px -1px 0 rgba(0, 0, 0, 0.42);
-  }
-  /* a faint contact shadow so each card sits in the scene, not over it */
-  .hs-label::after {
-    content: "";
-    position: absolute;
-    left: 8%;
-    right: 8%;
-    bottom: -9px;
-    height: 14px;
-    background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.5), transparent 72%);
-    filter: blur(4px);
-    z-index: -1;
-  }
-  .hs-label--chaos {
-    left: 1%;
-    top: 10%;
-  }
-  .hs-label--clarity {
-    right: 2%;
-    top: 10%;
-    text-align: right;
-    align-items: flex-end;
-  }
-  .hs-label-title {
-    font-family: var(--app);
-    font-weight: 600;
-    font-size: 11.5px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(247, 244, 236, 0.94);
-  }
-  .hs-label-detail {
-    font-family: var(--text);
-    font-size: 13px;
-    line-height: 1.42;
-    color: var(--paper-a62);
-  }
-
-  /* ---- the intake stream: source chips ---- */
-  /* scattered through the stream, not a tidy list */
-  .hs-sources {
+  /* ---- layer 1 · the streams of light ---- */
+  .cs-canvas {
     position: absolute;
     inset: 0;
-    z-index: 5;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .hs-source {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 5px 11px 5px 9px;
-    background: linear-gradient(
-      160deg,
-      rgba(30, 27, 24, 0.34),
-      rgba(8, 6, 4, 0.4)
-    );
-    border: 1px solid rgba(247, 244, 236, 0.05);
-    border-top-color: rgba(247, 244, 236, 0.12);
-    border-radius: 7px;
-    -webkit-backdrop-filter: blur(9px);
-    backdrop-filter: blur(9px);
-    transform: rotate(var(--r));
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.36);
-  }
-  /* richer evidence variants scattered in the stream */
-  .hs-source--card {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 5px;
-    width: 152px;
-    padding: 9px 11px;
-    border-radius: 6px;
-  }
-  .hs-source-head {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .hs-source-tag {
-    font-family: var(--app);
-    font-weight: 600;
-    font-size: 8px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(247, 244, 236, 0.5);
-  }
-  .hs-source-meta {
-    margin-left: auto;
-    font-family: var(--app);
-    font-size: 8px;
-    letter-spacing: 0.04em;
-    color: rgba(247, 244, 236, 0.4);
-  }
-  .hs-source-quote {
-    font-family: var(--text);
-    font-size: 11px;
-    line-height: 1.32;
-    color: rgba(247, 244, 236, 0.78);
-  }
-  .hs-source-stars {
-    font-size: 9px;
-    letter-spacing: 1.5px;
-    color: #cf9f43;
-  }
-  .hs-source-stars .dim {
-    color: rgba(207, 159, 67, 0.28);
-  }
-  .hs-source-lines {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .hs-source-lines span {
-    display: block;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(247, 244, 236, 0.12);
-  }
-  .hs-source-ico {
-    display: inline-flex;
-    color: rgba(247, 244, 236, 0.5);
-  }
-  .hs-source-label {
-    font-family: var(--app);
-    font-size: 11.5px;
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-    color: rgba(247, 244, 236, 0.8);
-  }
-
-  /* ---- evidence chips carried in the stream ---- */
-  .hs-streamcard {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 128px;
-    padding: 8px 10px;
-    background: rgba(20, 15, 10, 0.78);
-    border: 1px solid rgba(247, 244, 236, 0.12);
-    border-radius: 4px;
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    transform: rotate(var(--r));
-    will-change: transform, opacity;
-  }
-  .hs-sc-src {
-    font-family: var(--app);
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--paper-a62);
-  }
-  .hs-sc-stars {
-    font-size: 9px;
-    letter-spacing: 1px;
-    color: #cf9f43;
-  }
-  .hs-sc-star-dim {
-    color: rgba(207, 159, 67, 0.3);
-  }
-  .hs-sc-arrow {
-    font-size: 9px;
-    color: var(--paper-a62);
-  }
-  .hs-sc-lines {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  .hs-sc-lines span {
-    display: block;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(247, 244, 236, 0.14);
-  }
-
-  /* ---- the intake stream (dense canvas field) ---- */
-  .hs-canvas {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
+    z-index: 1;
     width: 100%;
     height: 100%;
     pointer-events: none;
   }
 
-  /* ---- the lens + its machined stand rising from the desk ---- */
-  /* a single minimal laboratory clamp gripping the lower rim — the only visible
-     part of the mount; the stand is gone so the optics read as suspended */
-  .hs-lens-clamp {
-    position: absolute;
-    left: 54%;
-    top: 62.5%;
-    z-index: 3;
-    width: 26px;
-    height: 11px;
-    transform: translate(-50%, -50%) rotate(-16deg);
-    background: linear-gradient(180deg, #3a3d43 0%, #191a1e 44%, #070709 100%);
-    border-radius: 3px / 4px;
-    box-shadow: inset 0 1px 0 rgba(180, 184, 190, 0.24);
-  }
-  .hs-lens-shadow {
-    position: absolute;
-    left: 55%;
-    top: 84%;
-    z-index: 2;
-    width: 92px;
-    height: 18px;
-    transform: translateX(-50%);
-    background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.42), transparent 74%);
-    filter: blur(11px);
-  }
-  .hs-lens {
-    position: absolute;
-    left: 56%;
-    top: 43%;
-    z-index: 4;
-    width: 28%;
-    max-width: 316px;
-    transform: translate(-50%, -50%) rotate(-5deg);
-  }
-  .hs-lens-svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    transform-origin: center;
-    filter: drop-shadow(0 9px 20px rgba(0, 0, 0, 0.5));
-  }
-  .hs-lens-glint {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  /* ---- the resolved beam + red verdict point ---- */
-  .hs-beam {
+  /* ---- layer 2 · the drifting opinion chips ---- */
+  .cs-chips {
     position: absolute;
     inset: 0;
-    z-index: 3;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
+    z-index: 2;
+    pointer-events: none;
   }
-  .hs-beam-line {
-    /* thin near-white rays, brightening toward the convergence point */
-    stroke: rgba(247, 244, 236, 0.5);
-    stroke-width: 0.9;
-    stroke-linecap: round;
-  }
-  .hs-verdict-line {
+  /* the positioned anchor — Framer Motion drives its transform (drift);
+     the CSS `translate` centres it on (fx, fy) and composes independently */
+  .cs-chip {
     position: absolute;
-    left: var(--x);
-    top: var(--y);
-    z-index: 3;
-    width: 11%;
-    height: 2px;
-    transform: translateY(-50%);
-    background: linear-gradient(
-      90deg,
-      rgba(255, 96, 68, 0.95),
-      rgba(220, 70, 48, 0.28) 45%,
-      transparent 85%
-    );
-    box-shadow: 0 0 14px rgba(255, 80, 55, 0.6);
-    filter: blur(0.4px);
+    translate: -50% -50%;
+    will-change: transform;
   }
-  .hs-verdict {
-    position: absolute;
-    left: var(--x);
-    top: var(--y);
-    z-index: 5;
-    transform: translate(-50%, -50%);
+  /* the pill itself — charcoal, thin border, small type; depth via opacity,
+     blur and scale so the field reads like dust suspended in light */
+  .cs-chip-in {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-family: var(--app);
+    font-weight: 450;
+    font-size: 11.5px;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    color: rgba(247, 244, 236, 0.9);
+    background: var(--cs-chip);
+    border: 1px solid var(--cs-chip-edge);
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+    filter: blur(var(--blur, 0px));
+    opacity: var(--op, 0.82);
+    transform-origin: center;
+    backface-visibility: hidden;
   }
-  /* layered emitter: a small hot core, a bloom, and a wide soft halo */
-  .hs-verdict-core {
-    display: block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff2ee 0%, #ff3b30 46%, #9a2016 100%);
-    box-shadow:
-      0 0 12px 3px rgba(255, 70, 45, 0.9),
-      0 0 34px 10px rgba(255, 70, 45, 0.5),
-      0 0 70px 26px rgba(210, 50, 28, 0.28);
+  /* near chips sit a touch brighter and more solid; far chips flatten out */
+  .cs-chip[data-depth="2"] .cs-chip-in {
+    background: var(--cs-chip-near);
+    border-color: var(--cs-chip-edge-near);
+    color: rgba(247, 244, 236, 0.96);
   }
-  .hs-verdict-ring {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    border: 1px solid rgba(255, 90, 66, 0.7);
-    opacity: 0;
+  .cs-chip[data-depth="0"] .cs-chip-in {
+    box-shadow: none;
   }
 
-  /* ---- the running ledger — executive dashboard card (glass) ---- */
-  .hs-stats {
+  /* ---- layer 3 · the one perception. Fixed. Never moves. ---- */
+  .cs-card {
     position: absolute;
-    right: 2.5%;
-    bottom: 3%;
-    z-index: 6;
-    width: 210px;
-    padding: 8px 20px 14px;
-    /* in-scene glass, with a warm bleed on the lamp-facing (lower-left) corner */
-    background:
-      radial-gradient(120% 90% at 0% 100%, rgba(200, 130, 50, 0.2), transparent 55%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.012) 42%, rgba(10, 8, 6, 0.5) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-top-color: rgba(255, 244, 228, 0.14);
-    border-radius: 7px;
-    -webkit-backdrop-filter: blur(16px) saturate(1.15);
-    backdrop-filter: blur(16px) saturate(1.15);
+    right: 1.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: clamp(244px, 30%, 344px);
+    padding: 26px 26px 22px;
+    /* dark, solid — deliberately no glassmorphism */
+    background: #0c0a08;
+    border: 1px solid rgba(247, 244, 236, 0.14);
+    border-radius: 8px;
+    /* a deep lift plus a subtle warm cast — the stream's light on the card */
     box-shadow:
-      0 30px 60px -20px rgba(0, 0, 0, 0.82),
-      inset 0 1px 0 rgba(255, 244, 228, 0.16),
-      inset -1px -1px 0 rgba(0, 0, 0, 0.4);
+      0 40px 80px -30px rgba(0, 0, 0, 0.9),
+      0 0 64px -22px rgba(192, 86, 58, 0.38);
+    overflow: hidden;
   }
-  .hs-stats::after {
-    content: "";
-    position: absolute;
-    left: 10%;
-    right: 10%;
-    bottom: -10px;
-    height: 16px;
-    background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.55), transparent 72%);
-    filter: blur(5px);
-    z-index: -1;
-  }
-  .hs-stat {
-    position: relative;
-    padding: 15px 0;
-  }
-  .hs-stat-label {
-    display: block;
-    font-family: var(--app);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(247, 244, 236, 0.5);
-  }
-  .hs-stat-val {
-    display: block;
-    margin-top: 8px;
-    font-family: var(--display);
-    font-weight: 400;
-    font-size: 32px;
-    line-height: 1;
-    text-align: right;
-    letter-spacing: -0.01em;
-    color: rgba(247, 244, 236, 0.96);
-    font-feature-settings: "onum" 1, "pnum" 1;
-  }
-  .hs-stat-rule {
+  /* the warm glow where the stream is received at the card's left edge */
+  .cs-card-glow {
     position: absolute;
     left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: rgba(247, 244, 236, 0.06);
-  }
-  .hs-stat--note {
-    padding-bottom: 2px;
-  }
-  .hs-stat--note .hs-stat-label {
-    color: rgba(247, 244, 236, 0.42);
-  }
-
-  /* ---- motion (gated behind .js; still + finished without it) ---- */
-  .js .hs:not(.is-reduced) .hs-label,
-  .js .hs:not(.is-reduced) .hs-stats {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  .js .hs:not(.is-reduced) .hs-source {
-    opacity: 0;
-  }
-  .js .hs:not(.is-reduced) .hs-lens,
-  .js .hs:not(.is-reduced) .hs-verdict,
-  .js .hs:not(.is-reduced) .hs-verdict-line {
-    opacity: 0;
-  }
-
-  .js .hs.is-ready:not(.is-reduced) .hs-label--chaos {
-    animation: hs-fade-up 0.6s ease 0.25s forwards;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-label--clarity {
-    animation: hs-fade-up 0.6s ease 0.9s forwards;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-stats {
-    animation: hs-fade-up 0.6s ease 1s forwards;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-source {
-    animation: hs-fade 0.5s ease forwards;
-    animation-delay: calc(0.2s + var(--i) * 0.04s);
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-lens {
-    animation: hs-fade 0.7s ease 0.35s forwards;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-verdict {
-    animation: hs-fade 0.6s ease 1.05s forwards;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-verdict-line {
-    animation: hs-grow-line 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 1.15s forwards;
-  }
-
-  .js .hs.is-ready:not(.is-reduced) .hs-particle {
-    animation: hs-drift var(--dur) cubic-bezier(0.5, 0, 0.85, 0.4) var(--delay)
-      infinite;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-focal {
-    animation: hs-focal-pulse 4s ease-in-out 0.4s infinite;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-streamcard {
-    animation: hs-streamcard var(--dur) ease-in-out var(--delay) infinite;
-  }
-  .js .hs:not(.is-reduced) .hs-beam-line {
-    animation:
-      hs-beam-shimmer 5s ease-in-out infinite,
-      hs-beam-flow 3.4s linear infinite;
-    animation-delay: calc(var(--i) * 0.14s), calc(var(--i) * -0.16s);
-  }
-  @keyframes hs-beam-flow {
-    to {
-      stroke-dashoffset: -34.4;
-    }
-  }
-  .js .hs:not(.is-reduced) .hs-lens-svg {
-    animation: hs-lens-breathe 9s ease-in-out infinite;
-  }
-  .js .hs:not(.is-reduced) .hs-lens-glint {
-    animation: hs-glint 11s ease-in-out infinite;
-  }
-  .js .hs:not(.is-reduced) .hs-lens-coat {
-    animation: hs-coat 14s ease-in-out infinite;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  @keyframes hs-coat {
-    0%,
-    100% {
-      opacity: 0.7;
-      transform: translate(0, 0);
-    }
-    50% {
-      opacity: 1;
-      transform: translate(3px, -2px);
-    }
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-verdict-core {
-    animation: hs-verdict-pulse 4s ease-in-out 1.4s infinite;
-  }
-  .js .hs.is-ready:not(.is-reduced) .hs-verdict-ring {
-    animation: hs-verdict-ring 4s ease-out 1.4s infinite;
-  }
-
-  /* the still composition for reduced motion */
-  .hs.is-reduced .hs-particle {
-    opacity: calc(var(--op) * 0.85);
-    transform: translate3d(
-      calc(var(--sx) * 0.5),
-      calc(var(--sy) * 0.5),
-      0
+    top: 50%;
+    width: 62%;
+    height: 74%;
+    transform: translateY(-50%);
+    background: radial-gradient(
+      58% 50% at 0% 50%,
+      rgba(255, 226, 196, 0.1),
+      rgba(192, 86, 58, 0.05) 42%,
+      transparent 72%
     );
+    pointer-events: none;
   }
-  .hs.is-reduced .hs-focal {
-    opacity: 0.85;
+  .cs-card-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 18px;
+    font-family: var(--app);
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--paper-a62);
   }
-  .hs.is-reduced .hs-streamcard {
-    opacity: 0.9;
-    transform: translate(calc(var(--tx) * 0.4), calc(var(--ty) * 0.4))
-      rotate(var(--r));
+  .cs-card-dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cs-red);
+    box-shadow: 0 0 8px rgba(192, 86, 58, 0.85);
   }
-  .hs.is-reduced .hs-verdict-ring {
-    display: none;
+  .cs-card-quote {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(21px, 1.9vw, 27px);
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+    color: var(--cs-ivory);
+  }
+  .cs-card-rule {
+    height: 1px;
+    margin: 22px 0 18px;
+    background: rgba(247, 244, 236, 0.12);
+  }
+  .cs-card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+  }
+  .cs-card-stat {
+    padding-left: 16px;
+    border-left: 1px solid rgba(247, 244, 236, 0.1);
+  }
+  .cs-card-stat:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+  .cs-card-stat-val {
+    font-family: var(--display);
+    font-weight: 450;
+    font-size: clamp(22px, 2vw, 30px);
+    line-height: 1;
+    color: var(--cs-ivory);
+    font-feature-settings:
+      "onum" 1,
+      "pnum" 1;
+  }
+  .cs-card-stat-cap {
+    margin: 6px 0 0;
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--paper-a62);
   }
 
-  @keyframes hs-fade {
-    to {
-      opacity: 1;
-    }
+  /* the perception dot breathes slowly — a single, quiet sign of life */
+  .js .cs-card-dot {
+    animation: cs-dot-pulse 3.4s ease-in-out infinite;
   }
-  @keyframes hs-fade-up {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes hs-chip-in {
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes hs-grow-line {
-    from {
-      opacity: 0;
-      clip-path: inset(0 100% 0 0);
-    }
-    to {
-      opacity: 1;
-      clip-path: inset(0 0 0 0);
-    }
-  }
-  @keyframes hs-drift {
-    0% {
-      opacity: 0;
-      transform: translate3d(var(--sx), var(--sy), 0) scale(0.5);
-    }
-    10% {
-      opacity: var(--op);
-    }
-    72% {
-      opacity: var(--op);
-    }
-    90% {
-      opacity: var(--op);
-      transform: translate3d(
-          calc(var(--sx) * 0.06),
-          calc(var(--sy) * 0.06),
-          0
-        )
-        scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: translate3d(0, 0, 0) scale(0.35);
-    }
-  }
-  @keyframes hs-focal-pulse {
+  @keyframes cs-dot-pulse {
     0%,
     100% {
-      opacity: 0.7;
-      transform: scale(1);
+      opacity: 0.65;
     }
     50% {
       opacity: 1;
-      transform: scale(1.12);
     }
   }
-  @keyframes hs-streamcard {
-    0% {
-      opacity: 0;
-      transform: translate(0, 0) rotate(var(--r)) scale(1);
-    }
-    14% {
-      opacity: 0.95;
-    }
-    68% {
-      opacity: 0.82;
-    }
-    100% {
-      opacity: 0;
-      transform: translate(var(--tx), var(--ty)) rotate(calc(var(--r) + 7deg))
-        scale(0.58);
-    }
-  }
-  @keyframes hs-beam-shimmer {
-    0%,
-    100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
-  @keyframes hs-lens-breathe {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.015);
-    }
-  }
-  @keyframes hs-glint {
-    0%,
-    100% {
-      opacity: 0.1;
-      transform: translateY(0);
-    }
-    50% {
-      opacity: 0.2;
-      transform: translateY(6px);
-    }
-  }
-  @keyframes hs-verdict-pulse {
-    0%,
-    100% {
-      box-shadow: 0 0 12px 2px rgba(166, 58, 43, 0.55);
-      transform: scale(1);
-    }
-    50% {
-      box-shadow: 0 0 22px 6px rgba(166, 58, 43, 0.85);
-      transform: scale(1.14);
-    }
-  }
-  @keyframes hs-verdict-ring {
-    0% {
-      opacity: 0.55;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    70%,
-    100% {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(3.4);
+  @media (prefers-reduced-motion: reduce) {
+    .cs-card-dot {
+      animation: none;
     }
   }
 
-  /* ---- the apparatus, stacked below the lede on tablet / mobile ---- */
+  /* ---- the stream, stacked below the lede on tablet / mobile ---- */
   @media (max-width: 979px) {
-    .hs-stage {
-      height: clamp(440px, 66vw, 560px);
-      max-width: 620px;
+    .cs-stage {
+      height: clamp(380px, 52vw, 460px);
+      max-width: 680px;
       margin-inline: auto;
     }
-    .hs-label {
-      max-width: 44%;
-      padding: 9px 12px;
-      gap: 3px;
+    .cs-card {
+      right: 2%;
+      width: clamp(206px, 40%, 268px);
+      padding: 18px 18px 16px;
     }
-    .hs-label--chaos {
-      top: 1%;
-      left: 0;
+    .cs-card-eyebrow {
+      margin-bottom: 14px;
     }
-    .hs-label--clarity {
-      top: 1%;
-      right: 0;
-    }
-    .hs-label-title {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-    }
-    .hs-label-detail {
-      font-size: 10.5px;
-      line-height: 1.3;
-    }
-    .hs-sources {
-      top: 21%;
-      gap: 4px;
-    }
-    .hs-source {
-      padding: 4px 10px 4px 8px;
-      gap: 6px;
-    }
-    .hs-source-label {
-      font-size: 10.5px;
-    }
-    .hs-lens {
-      left: 58%;
-      top: 42%;
-      width: 30%;
-    }
-    .hs-field {
-      left: 52%;
-    }
-    .hs-stats {
-      width: 150px;
-      padding: 4px 13px 8px;
-      bottom: 3%;
-    }
-    .hs-stat {
-      padding: 7px 0;
-    }
-    .hs-stat-val {
-      font-size: 22px;
+    .cs-card-quote {
+      font-size: clamp(17px, 3vw, 21px);
     }
   }
   @media (max-width: 560px) {
-    .hs-label {
-      max-width: 50%;
+    .cs-stage {
+      height: 340px;
     }
-    .hs-label-detail {
-      font-size: 9.5px;
+    .cs-card {
+      width: 188px;
+      padding: 14px 14px 12px;
     }
-    .hs-source {
-      padding: 3px 9px 3px 7px;
+    .cs-card-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      margin-bottom: 12px;
     }
-    .hs-source-label {
-      font-size: 10px;
+    .cs-card-quote {
+      font-size: 16px;
+      line-height: 1.24;
     }
-    .hs-stats {
-      width: 132px;
+    .cs-card-rule {
+      margin: 14px 0 12px;
     }
-    .hs-stat-val {
-      font-size: 19px;
+    .cs-card-stat {
+      padding-left: 12px;
     }
-  }
-
-  /* desk motion respects the OS setting directly (no client flag) */
-  @media (prefers-reduced-motion: reduce) {
-    .hero-bulb,
-    .hero-bulb-bloom,
-    .hero-steam {
-      animation: none;
+    .cs-card-stat-val {
+      font-size: 18px;
     }
-    .hero-steam {
-      opacity: 0;
+    .cs-chip-in {
+      padding: 5px 10px;
+      font-size: 10.5px;
     }
   }
 
@@ -2388,7 +1795,7 @@
      one red verdict reads the mean deviation. Red is spent only on the
      measured distance and the finding — nowhere else. */
   .gi {
-    margin: calc(var(--u) * 8) 0 0;
+    margin: calc(var(--u) * 6) 0 0;
     --gi-wordcol: clamp(104px, 15vw, 176px);
     --gi-rowh: clamp(54px, 6.2vw, 70px);
   }
@@ -2760,7 +2167,6 @@
     --bsp-red-lit: #e2795f; /* the pen, legible on the dark panel */
     --bsp-onink: #f7f4ec; /* paper, printed on ink */
     margin-top: calc(var(--u) * 7);
-    max-width: 1040px;
   }
   .bsp-head {
     display: flex;
@@ -3984,15 +3390,15 @@
     padding: 0;
   }
   .ms-block {
-    min-height: 84vh;
+    min-height: 72vh;
     display: flex;
     align-items: center;
   }
   .ms-block:first-child {
-    min-height: 70vh;
+    min-height: 60vh;
   }
   .ms-block:last-child {
-    min-height: 76vh;
+    min-height: 64vh;
     padding-bottom: calc(var(--u) * 4);
   }
   .ms-block-inner {
@@ -4099,7 +3505,7 @@
     background: var(--ink);
     color: var(--paper);
     margin-top: var(--section-gap);
-    padding: calc(var(--u) * 13) 0 calc(var(--u) * 12);
+    padding: calc(var(--u) * 10) 0 calc(var(--u) * 9);
   }
   .spread-ink .folio {
     color: var(--paper-a62);
@@ -4290,6 +3696,86 @@
   }
   .sources-index .leader-row {
     padding: 16px 0;
+  }
+
+  /* Listening map — the opener exhibit: ten channels converge to one reading. */
+  .listen-map {
+    margin: 0;
+    align-self: stretch;
+  }
+  .listen-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+  }
+  .listen-head-r {
+    color: var(--ink-soft);
+  }
+  .listen-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: calc(var(--u) * 2.5);
+    overflow: visible;
+  }
+  .listen-lines path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    opacity: 0.26;
+  }
+  .listen-dot {
+    fill: var(--ink);
+  }
+  .listen-label {
+    font-family: var(--display);
+    font-weight: 470;
+    font-size: 12px;
+    fill: var(--ink);
+  }
+  .listen-node-ring {
+    fill: none;
+    stroke: var(--red-a35);
+    stroke-width: 1;
+  }
+  .listen-node-core {
+    fill: var(--red);
+  }
+  .listen-node-label {
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    fill: var(--ink);
+  }
+  .listen-node-sub {
+    font-family: var(--app);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    fill: var(--ink-soft);
+  }
+  .listen-cap {
+    margin-top: calc(var(--u) * 2);
+  }
+  /* Signals flow inward when the map reveals — staggered per source line. */
+  .js .listen-map .listen-lines path {
+    stroke-dasharray: 360;
+    stroke-dashoffset: 360;
+  }
+  .js .listen-map.is-in .listen-lines path {
+    transition: stroke-dashoffset 0.9s ease;
+    transition-delay: calc(var(--i) * 0.06s);
+    stroke-dashoffset: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .listen-map .listen-lines path {
+      stroke-dashoffset: 0;
+    }
   }
 
   /* ---------- §6b FLOW BAND / TICKER ---------- */
@@ -4497,7 +3983,6 @@
   .corrections {
     margin-top: calc(var(--u) * 7);
     border-top: 1px solid var(--ink);
-    max-width: 1000px;
   }
   .correction {
     display: grid;
@@ -4925,21 +4410,6 @@
   .bsm-meta {
     margin-top: calc(var(--u) * 2.5);
   }
-  /* The figure now spans the full column and scales itself down as one rigid
-     object — no per-breakpoint height math. */
-  .trust-stats {
-    grid-template-columns: 1fr 1fr;
-  }
-  .trust-cell {
-    padding: 22px 24px 20px;
-  }
-  .trust-cell:nth-child(3) {
-    border-left: none;
-    padding-left: 0;
-  }
-  .trust-cell:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--rule14);
-  }
   .bsp-diagram {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -5009,11 +4479,6 @@
     width: clamp(150px, 52%, 210px);
     max-width: 56%;
   }
-  .trust-logos {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
   .plate {
     padding: 24px 20px 26px;
   }
@@ -5077,9 +4542,6 @@
   }
   .leader-tag {
     display: none;
-  }
-  .trust-stats {
-    grid-template-columns: 1fr 1fr;
   }
   .doc-cell {
     padding: 12px 14px 10px;

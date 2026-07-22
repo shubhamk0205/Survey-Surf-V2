@@ -1,6 +1,4 @@
-import { HeroAtmosphere } from "@/components/figures/hero-atmosphere";
-import { HeroDesk } from "@/components/figures/hero-desk";
-import { HeroScene } from "@/components/figures/hero-scene";
+import { ConversationStream } from "@/components/figures/conversation-stream";
 import { Slip } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { PenMark } from "@/components/ui/pen-mark";
@@ -8,14 +6,12 @@ import { Reveal } from "@/components/ui/reveal";
 import { hero } from "@/lib/content";
 
 /**
- * The cover. A true split: an editorial lede stated on the dark wall of an
- * executive research room, beside FIG. A — the perception apparatus that proves
- * it. The headline makes the claim; millions of scattered signals are drawn
- * through a precision lens and resolve into the one perception that settles it.
- *
- * A full-bleed dark section: the night-lit room and its lamp-lit desk run edge
- * to edge behind the lede, the same inverted treatment the issue already uses
- * for the transcript spread and the back cover — now on the cover.
+ * The cover. A true split on a black field: an editorial lede on the left,
+ * beside FIG. A — the conversation stream that proves it. The headline makes
+ * the claim; on the right, millions of scattered customer opinions drift, emit
+ * thin streams of light, and converge — like rivers joining — into the one
+ * perception the market already holds. Survey Surf does not generate the
+ * insight; it reveals the one that already exists.
  */
 export function Hero() {
   return (
@@ -24,16 +20,6 @@ export function Hero() {
       data-dark-hero
       aria-label="Survey Surf — the perception company"
     >
-      {/* The dark research room: floor-to-ceiling windows onto a night skyline,
-          a warm charcoal palette, and a left vignette — all live CSS. */}
-      <div className="hero-room" aria-hidden="true" />
-      {/* Volumetric light shafts thrown by the two architect lamps. */}
-      <div className="hero-lights" aria-hidden="true" />
-      {/* The lamp-lit executive desk, full-bleed along the bottom (SVG). */}
-      <HeroDesk />
-      {/* The air of the room — dust motes + haze catching the lamp light. */}
-      <HeroAtmosphere />
-
       <Container className="hero-cover-in">
         <div className="hero-lede">
           <Reveal as="p" className="hero-eyebrow">
@@ -84,10 +70,11 @@ export function Hero() {
           </Reveal>
         </div>
 
-        {/* FIG. A — the perception apparatus, recreated entirely from live
-            components (canvas particle flow + SVG lens + beam + cards). */}
+        {/* FIG. A — the conversation stream: drifting opinion chips (HTML) +
+            converging streams of light (canvas) resolving into one fixed
+            perception card. Entirely live-coded, never a screenshot. */}
         <div className="hero-exhibit-col">
-          <HeroScene />
+          <ConversationStream />
         </div>
       </Container>
     </section>

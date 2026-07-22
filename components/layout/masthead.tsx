@@ -27,6 +27,8 @@ export function Masthead() {
   const headerRef = useRef<HTMLElement>(null);
   // Default to the dark treatment on the home cover to avoid a load flash.
   const [onDark, setOnDark] = useState(pathname === "/");
+  // Frost the bar once the page leaves the very top of the cover.
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const hero = document.querySelector<HTMLElement>("[data-dark-hero]");
@@ -41,6 +43,7 @@ export function Masthead() {
       frame = 0;
       const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
       setOnDark(window.scrollY < heroBottom - header.offsetHeight);
+      setScrolled(window.scrollY > 4);
     };
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(update);
@@ -57,7 +60,14 @@ export function Masthead() {
   }, [pathname]);
 
   return (
-    <header ref={headerRef} className={cn("masthead", onDark && "masthead--on-dark")}>
+    <header
+      ref={headerRef}
+      className={cn(
+        "masthead",
+        onDark && "masthead--on-dark",
+        scrolled && "masthead--scrolled",
+      )}
+    >
       <Container className="masthead-in">
         <Link className="wordmark" href={`#${sectionIds.top}`}>
           {siteConfig.wordmark.first}
