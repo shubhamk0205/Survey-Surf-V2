@@ -1,0 +1,11 @@
+.next
+node_modules
+prisma/migrations
+package-lock.json
+pnpm-lock.yaml
+*.min.css
+*.min.js
+
+# The canonical visual reference — left untouched by tooling
+theme-02.html
+theme-02.css

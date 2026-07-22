@@ -1,0 +1,722 @@
+/* ============================================================
+   SURVEY SURF — DESIGN SYSTEM
+   "The magazine that investigates you."
+   Theme: Editorial Ivory · One paper, three voices, the editor's red pen.
+
+   This file is the single source of truth for the visual language:
+     1. @theme       — design tokens (Tailwind v4 utilities + CSS vars)
+     2. :root aliases — short, readable token names used by components
+     3. @layer base  — global element styles
+     4. @layer components — the editorial component vocabulary
+     5. Motion       — reveal system + reduced-motion contract
+
+   Nothing visual should be hardcoded in a component. If a value belongs
+   to the brand, it lives here as a token.
+   ============================================================ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./sections.css"; /* section-level layouts (hero, gap, johari, …) */
+
+/* ------------------------------------------------------------------
+   1 · TOKENS — exposed to Tailwind as utilities (bg-paper, text-ink, …)
+   and as CSS variables (var(--color-ink), var(--font-display), …).
+   ------------------------------------------------------------------ */
+@theme {
+  /* Surface & ink */
+  --color-paper: #f7f4ec; /* the ivory page */
+  --color-plate: #efebdf; /* figure-plate field */
+  --color-ink: #1d1b16; /* text ink */
+  --color-ink-soft: #5b5549; /* apparatus / captions */
+  --color-ink-faint: #3e3a31; /* dense small type */
+  --color-red: #a63a2b; /* the editor's pen — marks only, never a fill */
+
+  /* Hairlines (opacity variants of ink) */
+  --color-hair: rgba(29, 27, 22, 0.34);
+  --color-rule: rgba(29, 27, 22, 0.14);
+
+  /* Type families — bound to next/font CSS variables with system fallbacks */
+  --font-display:
+    var(--font-newsreader), "Iowan Old Style", "Palatino", Georgia, serif;
+  --font-text: var(--font-source-serif), "Iowan Old Style", Georgia, serif;
+  --font-app: var(--font-libre-franklin), "Helvetica Neue", Arial, sans-serif;
+
+  /* Layout scale */
+  --spacing-unit: 8px; /* baseline rhythm unit */
+  --container-editorial: 1480px; /* wide editorial measure — confident, not floating */
+
+  /* Breakpoints — mirror the reference's responsive stops */
+  --breakpoint-ss-sm: 680px;
+  --breakpoint-ss-md: 900px;
+  --breakpoint-ss-lg: 1120px;
+}
+
+/* ------------------------------------------------------------------
+   2 · ROOT ALIASES — the vocabulary components speak in.
+   Short names keep ported editorial CSS readable and 1:1 with intent.
+   ------------------------------------------------------------------ */
+:root {
+  --paper: var(--color-paper);
+  --plate: var(--color-plate);
+  --ink: var(--color-ink);
+  --ink-soft: var(--color-ink-soft);
+  --ink-faint: var(--color-ink-faint);
+  --red: var(--color-red);
+  --hair: var(--color-hair);
+  --rule14: var(--color-rule);
+
+  --display: var(--font-display);
+  --text: var(--font-text);
+  --app: var(--font-app);
+
+  --u: var(--spacing-unit);
+  --max: var(--container-editorial);
+  --margin-col: 240px; /* reserved outer margin column */
+  --measure: 66ch; /* ideal reading measure */
+  --pad-x: 72px; /* container gutter — generous, intentional (responsive below) */
+  --section-gap: 120px; /* rhythm between chapters (responsive below) */
+
+  /* Alpha variants — derived from the base inks so brand color lives in
+     exactly one place. Used for washes, hairlines, shadows and overlays. */
+  --red-a18: color-mix(in srgb, var(--red) 18%, transparent);
+  --red-a35: color-mix(in srgb, var(--red) 35%, transparent);
+  --ink-a05: color-mix(in srgb, var(--ink) 4.5%, transparent);
+  --ink-a12: color-mix(in srgb, var(--ink) 12%, transparent);
+  --ink-a14: color-mix(in srgb, var(--ink) 14%, transparent);
+  --ink-a40: color-mix(in srgb, var(--ink) 40%, transparent);
+  --ink-a45: color-mix(in srgb, var(--ink) 45%, transparent);
+  --paper-a62: color-mix(in srgb, var(--paper) 62%, transparent);
+  --paper-a88: color-mix(in srgb, var(--paper) 88%, transparent);
+}
+
+/* Gutter + rhythm ladder — breathing room that scales with the viewport.
+   Content never reaches the browser edge, never floats in empty space.
+   Order matters: the large-desktop bump sits first, then the max-width
+   steps descend so the tightest matching stop wins at small viewports. */
+@media (min-width: 1680px) {
+  :root {
+    --pad-x: 80px; /* large desktop */
+  }
+}
+@media (max-width: 1120px) {
+  :root {
+    --pad-x: 56px; /* narrow desktop — the desktop floor, never tighter */
+  }
+}
+@media (max-width: 900px) {
+  :root {
+    --pad-x: 40px; /* tablet */
+    --section-gap: 88px;
+  }
+}
+@media (max-width: 680px) {
+  :root {
+    --pad-x: 24px; /* mobile */
+    --section-gap: 72px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   3 · BASE — global element styles (Tailwind preflight already applied)
+   ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--text);
+    font-size: 17.5px;
+    line-height: 1.7;
+    font-feature-settings:
+      "onum" 1,
+      "pnum" 1;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  img,
+  svg,
+  canvas {
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  ::selection {
+    background: var(--red-a18);
+  }
+
+  /* focus — the pen's attention */
+  :focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  /* the skip-link's landmark target is programmatically focused — no ring */
+  main:focus,
+  main:focus-visible {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   4 · COMPONENTS — the editorial vocabulary.
+   Each block corresponds to a reusable React component in components/.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* ---- Skip link ---- */
+  .ss-skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 200;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--app);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+  }
+  .ss-skip:focus {
+    left: 12px;
+    top: 12px;
+  }
+
+  /* ---- Container ---- */
+  .wrap {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--pad-x);
+  }
+
+  /* ---- Editorial row: reading matter + reserved margin column ---- */
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--margin-col);
+    column-gap: 64px;
+    align-items: start;
+  }
+  .margin-cell {
+    padding-top: 10px;
+  }
+  .col-read {
+    max-width: var(--measure);
+  }
+
+  /* ---- Voice 1 · Newsreader — headlines & pull quotes ---- */
+  .h1,
+  .h2,
+  .h3,
+  .pullq {
+    font-family: var(--display);
+    font-weight: 480;
+    letter-spacing: -0.014em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  .h1 {
+    font-size: clamp(46px, 6.2vw, 84px);
+    font-weight: 440;
+    line-height: 1.02;
+  }
+  .h2 {
+    font-size: clamp(34px, 4vw, 52px);
+  }
+  .h3 {
+    font-size: clamp(24px, 2.4vw, 31px);
+    line-height: 1.18;
+  }
+  .h1 em,
+  .h2 em,
+  .h3 em,
+  .pullq em {
+    font-style: italic;
+    font-weight: 420;
+  }
+
+  /* ---- Voice 2 · Source Serif — reading text ---- */
+  .standfirst {
+    font-size: clamp(18px, 1.6vw, 21px);
+    line-height: 1.62;
+    color: var(--ink);
+  }
+  .body-copy {
+    max-width: var(--measure);
+  }
+  .body-copy + .body-copy {
+    margin-top: calc(var(--u) * 3);
+  }
+  .dropcap::first-letter {
+    font-family: var(--display);
+    font-weight: 460;
+    font-size: 3.55em;
+    line-height: 0.8;
+    float: left;
+    padding: 0.06em 0.12em 0 0;
+  }
+
+  /* ---- Voice 3 · Franklin — all apparatus ---- */
+  .app,
+  .kicker,
+  .folio,
+  .plate-cap,
+  .slip,
+  .thumb-tab,
+  .leader-tag,
+  .fig-head {
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-feature-settings: normal;
+  }
+  .kicker {
+    color: var(--ink);
+    margin-bottom: calc(var(--u) * 3);
+  }
+  .kicker .kick-no {
+    color: var(--ink-soft);
+  }
+
+  /* ---- Folio — the chapter line ---- */
+  .folio {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    margin-bottom: calc(var(--u) * 1.5);
+  }
+
+  /* ---- Rules ---- */
+  .rule-dbl {
+    position: relative;
+    border-top: 2.5px solid var(--ink);
+    margin-bottom: calc(var(--u) * 5);
+  }
+  .rule-dbl::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 3px;
+    border-top: 1px solid var(--ink);
+  }
+  .rule-hair {
+    border-top: 1px solid var(--hair);
+  }
+
+  /* ---- Marginalia — red italic margin notes ---- */
+  .marginalia {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 420;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--red);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .margin-cell .marginalia {
+    padding-left: 18px;
+    border-left: 1px solid var(--red-a35);
+  }
+  .margin-cell .marginalia + .marginalia {
+    margin-top: calc(var(--u) * 4);
+  }
+
+  /* ---- Plate — figure field, ruled top & bottom ---- */
+  .plate {
+    background: var(--plate);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: calc(var(--u) * 5) calc(var(--u) * 5) calc(var(--u) * 5.5);
+  }
+  .plate-cap {
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.13em;
+    margin-top: calc(var(--u) * 1.5);
+    line-height: 1.8;
+  }
+  .plate-cap strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .fig-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.16em;
+    padding-bottom: calc(var(--u) * 2);
+    border-bottom: 1px solid var(--hair);
+    margin-bottom: calc(var(--u) * 3.5);
+  }
+  .fig-head strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---- Pen marks (SVG, animated by Framer Motion) ---- */
+  .pen-underline,
+  .pen-circle,
+  .pen-strike {
+    position: relative;
+    display: inline-block;
+  }
+  .pen-svg {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .pen-svg path {
+    stroke: var(--red);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  /* ---- Slip — the subscription-slip button ---- */
+  .slip {
+    display: inline-block;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    padding: 15px 26px 14px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-decoration: none;
+    transition:
+      background 0.25s ease,
+      color 0.25s ease;
+  }
+  .slip:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .slip--ink {
+    border-color: var(--paper);
+    color: var(--paper);
+  }
+  .slip--ink:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .slip--small {
+    padding: 9px 16px 8px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+
+  /* ---- Link-pen — red-underline reading link ---- */
+  .link-pen {
+    text-decoration: none;
+    background-image: linear-gradient(var(--red), var(--red));
+    background-repeat: no-repeat;
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    padding-bottom: 3px;
+    transition: background-size 0.35s ease;
+  }
+  .link-pen:hover,
+  .link-pen:focus-visible {
+    background-size: 100% 1.5px;
+  }
+
+  /* ---- Thumb tabs ---- */
+  .thumb-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 6px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .thumb-tab {
+    border: 1px solid var(--hair);
+    border-bottom: none;
+    background: transparent;
+    color: var(--ink-soft);
+    padding: 11px 20px 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.15em;
+    position: relative;
+    transition:
+      background 0.25s ease,
+      color 0.25s ease;
+  }
+  .thumb-tab:hover {
+    color: var(--ink);
+  }
+  .thumb-tab[aria-selected="true"] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .thumb-tab[aria-selected="true"]::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: -3px;
+    height: 3px;
+    background: var(--red);
+  }
+
+  /* page-turn settle for tab panels */
+  .turn-in {
+    animation: ss-turn 0.4s ease both;
+  }
+
+  /* ---- Leader rows (dot leaders) ---- */
+  .leader-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule14);
+  }
+  .leader-num {
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    min-width: 26px;
+  }
+  .leader-name {
+    font-family: var(--display);
+    font-weight: 470;
+    font-size: 19px;
+    line-height: 1.2;
+  }
+  .leader-dots {
+    flex: 1;
+    border-bottom: 1.5px dotted var(--ink-a45);
+    transform: translateY(-4px);
+    min-width: 30px;
+  }
+  .leader-tag {
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.13em;
+    text-align: right;
+  }
+  .leader-arrow {
+    font-family: var(--app);
+    font-size: 12px;
+    color: var(--red);
+  }
+
+  /* ---- Table-print ---- */
+  .table-print {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .table-print th,
+  .table-print td {
+    text-align: left;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--rule14);
+    vertical-align: baseline;
+  }
+  .table-print th {
+    font-family: var(--app);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.16em;
+    border-bottom: 1px solid var(--hair);
+  }
+  .table-print tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ---- Footnotes ---- */
+  .fn-mark {
+    text-decoration: none;
+    color: var(--red);
+    position: relative;
+  }
+  .fn-mark sup {
+    font-family: var(--app);
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+  .fn-mark::after {
+    content: attr(data-note);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%) translateY(4px);
+    width: min(300px, 74vw);
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink-a12);
+    padding: 12px 15px;
+    font-family: var(--text);
+    font-size: 13.5px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+    z-index: 40;
+  }
+  .fn-mark:hover::after,
+  .fn-mark:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .footnotes {
+    margin-top: calc(var(--u) * 7);
+    max-width: var(--measure);
+  }
+  .footnotes::before {
+    content: "";
+    display: block;
+    width: 176px;
+    border-top: 1px solid var(--ink);
+    margin-bottom: calc(var(--u) * 1.5);
+  }
+  .footnotes li {
+    list-style: none;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-faint);
+  }
+  .footnotes li + li {
+    margin-top: 6px;
+  }
+  .footnotes .fno {
+    color: var(--red);
+    font-size: 11px;
+    vertical-align: super;
+    margin-right: 6px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   5 · MOTION — reveal system + keyframes + reduced-motion contract
+   Progressive enhancement: content is visible by default (SSR / no-JS).
+   The `.js` class (added on mount by RevealRoot) opts into the animation,
+   so a failed or absent JS runtime never leaves content hidden.
+   ------------------------------------------------------------------ */
+@layer components {
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+  .js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Sequenced inking for dot-leader lists */
+  .js .ink-seq .leader-row {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+  }
+  .js .ink-seq.is-in .leader-row {
+    opacity: 1;
+    transform: none;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(1) {
+    transition-delay: 0.05s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(2) {
+    transition-delay: 0.13s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(3) {
+    transition-delay: 0.21s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(4) {
+    transition-delay: 0.29s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(5) {
+    transition-delay: 0.37s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(6) {
+    transition-delay: 0.45s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(7) {
+    transition-delay: 0.53s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(8) {
+    transition-delay: 0.61s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(9) {
+    transition-delay: 0.69s;
+  }
+  .js .ink-seq.is-in .leader-row:nth-child(10) {
+    transition-delay: 0.77s;
+  }
+}
+
+@keyframes ss-turn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ss-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Print is already still. */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal,
+  .js .ink-seq .leader-row {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .turn-in {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto;
+  }
+}

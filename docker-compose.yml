@@ -1,0 +1,24 @@
+# PostgreSQL for local development.
+# Port 5433 on the host avoids clashing with a native Postgres on 5432.
+# Bring it up with `npm run db:up` (docker compose up -d).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: surveysurf-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: surveysurf
+      POSTGRES_PASSWORD: surveysurf
+      POSTGRES_DB: surveysurf
+    ports:
+      - "5433:5432"
+    volumes:
+      - surveysurf-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U surveysurf -d surveysurf"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  surveysurf-pgdata:

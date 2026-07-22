@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(curl -s --max-time 20 -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/api/health)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN -Pn)",
+      "Read(//Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /public/**)",
+      "Read(//Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /app/**)",
+      "Bash(kill -9 55253 55252 54703 54702 43134 43133 42497 42496 60555 60554 60533)",
+      "Bash(awk '{print $2}')",
+      "Bash(lsof -ti:3210 -sTCP:LISTEN -n -P)"
+    ],
+    "additionalDirectories": [
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 ",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /lib/actions",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /hooks",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /components/ui",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /components/sections",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /components/figures",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /app",
+      "/Users/sarthakmidha/Documents/Survey Surf v2/theme 1 /lib"
+    ]
+  }
+}

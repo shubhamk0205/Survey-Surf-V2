@@ -1,0 +1,115 @@
+// Survey Surf — database schema
+// Only the models needed today. Future product models (Workspace, Projects,
+// Reports, Evidence, …) are intentionally NOT modelled yet; the schema is kept
+// clean so they can be added without reshaping what exists.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth.js (NextAuth) core models — the canonical adapter schema.
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ---------------------------------------------------------------------------
+// Marketing site — lead capture.
+// ---------------------------------------------------------------------------
+
+enum ContactStatus {
+  NEW
+  REVIEWED
+  ARCHIVED
+}
+
+model ContactSubmission {
+  id         String        @id @default(cuid())
+  name       String
+  email      String
+  company    String?
+  competitor String?
+  message    String        @db.Text
+  status     ContactStatus @default(NEW)
+  // Lightweight request context for triage / abuse review.
+  source     String?
+  userAgent  String?
+  createdAt  DateTime      @default(now())
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum SubscriptionStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+model NewsletterSubscriber {
+  id             String             @id @default(cuid())
+  email          String             @unique
+  status         SubscriptionStatus @default(SUBSCRIBED)
+  source         String?
+  createdAt      DateTime           @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([status])
+}
